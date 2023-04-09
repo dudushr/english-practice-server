@@ -29,6 +29,9 @@ import com.dudu.english.utils.DateUtils;
 public class DictionaryController {
 	private final static String DICTIONARY_FIOLDER_NAME = "C:\\MyFiles\\programs\\java\\EnglishPractice\\src\\resources\\dictionary\\"; 
 	private final static String DICTIONARY_FILE_NAME = "_dictionary.json";
+	
+	private final static String CONFIG_FIOLDER_NAME = "C:\\MyFiles\\programs\\java\\EnglishPractice\\src\\resources\\config\\"; 
+	private final static String CONFIG_FILE_NAME = "_config.json";
 
 	@GetMapping("/dictionary/get/{uid}")	
 	public String getDictionary(@PathVariable String uid) {
@@ -170,6 +173,43 @@ public class DictionaryController {
 		return "";
 	}
 	
+	
+	@GetMapping("/english/config/get/{uid}")	
+	private String loadConfig(@PathVariable String uid) { 
+		String config = "";
+		try {
+			config = IOUtils.readFile(getConfigFileName(uid));
+		}catch(Exception ex) {
+			System.out.println("Config no exist for user uid");
+		}
+		
+		return config;
+	}
+	
+	
+	@PostMapping("/english/config/save")
+	public String saveConfig(@RequestBody String params) {
+		String uid = getUid(params);
+		String numOfWordsInDictation = getBodyParam(params, "numOfWordsInDictation").replaceAll("\"", "");
+		String highLevelWords = getBodyParam(params, "highLevelWords").replaceAll("\"", "");
+		String mediumLevelWords = getBodyParam(params, "mediumLevelWords").replaceAll("\"", "");
+		String lowLevelWords = getBodyParam(params, "lowLevelWords").replaceAll("\"", "");
+		
+		try {
+			JSONObject json = new JSONObject();
+			json.put("numOfWordsInDictation", numOfWordsInDictation);
+			json.put("highLevelWords", highLevelWords);
+			json.put("mediumLevelWords", mediumLevelWords);
+			json.put("lowLevelWords", lowLevelWords);
+			IOUtils.writeToFile(json.toJSONString(), getConfigFileName(uid));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
 	private JSONObject toEnglishWord(String params) throws ParseException {
 		HashMap<String, String> paramsMap = bodyParamsToMap(params);
 		JSONObject word = new JSONObject();
@@ -308,6 +348,10 @@ public class DictionaryController {
 	
 	private String getDictionaryFileName(String uid) {
 		return new StringBuffer(DICTIONARY_FIOLDER_NAME).append(uid).append(DICTIONARY_FILE_NAME).toString();
+	}
+	
+	private String getConfigFileName(String uid) {
+		return new StringBuffer(CONFIG_FIOLDER_NAME).append(uid).append(CONFIG_FILE_NAME).toString();
 	}
 	
 }
