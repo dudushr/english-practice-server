@@ -23,14 +23,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dudu.english.utils.DateUtils;
+import com.dudu.english.utils.PropertiesUtils;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 public class DictionaryController {
-	private final static String DICTIONARY_FIOLDER_NAME = "C:\\MyFiles\\programs\\java\\EnglishPractice\\src\\resources\\dictionary\\"; 
+	private final static String DICTIONARY_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + "dictionary\\"; 
 	private final static String DICTIONARY_FILE_NAME = "_dictionary.json";
 	
-	private final static String CONFIG_FIOLDER_NAME = "C:\\MyFiles\\programs\\java\\EnglishPractice\\src\\resources\\config\\"; 
+	private final static String CONFIG_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + "config\\"; 
 	private final static String CONFIG_FILE_NAME = "_config.json";
 
 	@GetMapping("/dictionary/get/{uid}")	
