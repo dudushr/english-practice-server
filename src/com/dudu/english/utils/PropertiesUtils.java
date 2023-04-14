@@ -22,6 +22,8 @@ public class PropertiesUtils {
 			props = new Properties();
 			try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
 			    props.load(resourceStream);
+			}catch(Exception ex2) {
+				ex2.printStackTrace();
 			}
 		}catch(Exception ex) {
 			ex.printStackTrace();

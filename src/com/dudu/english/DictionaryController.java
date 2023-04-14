@@ -91,9 +91,7 @@ public class DictionaryController {
 					word.put("englishWord", newWord.get("englishWord"));
 					word.put("hebrewWord", newWord.get("hebrewWord"));
 					word.put("level", newWord.get("level"));
-					word.put("lastDictationDate", newWord.get("lastDictationDate"));
-					
-					saveDictionary(dict.toJSONString(), uid);
+					word.put("lastDictationDate", newWord.get("lastDictationDate"));										
 				}
 			}
 			
@@ -271,7 +269,9 @@ public class DictionaryController {
 	private String loadDictionary(String uid) { 
 		String dictionary = "";
 		try {
+			System.out.println("---> Dictionary filename = " + getDictionaryFileName(uid));
 			dictionary = IOUtils.readFile(getDictionaryFileName(uid));
+			System.out.println("---> dictionary = " + dictionary);
 		}catch(Exception ex) {
 			System.out.println("Dictionary no exist for user uid");
 		}
@@ -353,6 +353,7 @@ public class DictionaryController {
 		    dictionary = dict.toJSONString();
 		    
 		}catch(Exception ex) {
+			System.out.println(dictionary);
 			ex.printStackTrace();
 		}
 		
@@ -360,11 +361,11 @@ public class DictionaryController {
 	}
 	
 	private String getDictionaryFileName(String uid) {
-		return new StringBuffer(DICTIONARY_FIOLDER_NAME).append(uid).append(DICTIONARY_FILE_NAME).toString();
+		return new StringBuffer(DICTIONARY_FIOLDER_NAME).append(uid.toLowerCase()).append(DICTIONARY_FILE_NAME).toString();
 	}
 	
 	private String getConfigFileName(String uid) {
-		return new StringBuffer(CONFIG_FIOLDER_NAME).append(uid).append(CONFIG_FILE_NAME).toString();
+		return new StringBuffer(CONFIG_FIOLDER_NAME).append(uid.toLowerCase()).append(CONFIG_FILE_NAME).toString();
 	}
 	
 }
