@@ -327,7 +327,19 @@ public class DictionaryController {
 		            	return 1;
 		            }
 		            
-		            return calA.compareTo(calB);		            
+		            if(calA.compareTo(calB) == 0) {
+		            	int levelA = Integer.parseInt(a.get("level").toString());
+		            	int levelB = Integer.parseInt(b.get("level").toString());
+		            	if(levelA > levelB) {
+		            		return 1;
+		            	}else if(levelA < levelB) {
+		            		return -1;
+		            	}else {
+		            		return 0;
+		            	}
+		            }else{
+		            	return calA.compareTo(calB);
+		            }	            
 		        }
 		    });
 
