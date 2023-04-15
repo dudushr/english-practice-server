@@ -44,12 +44,19 @@
 			<version>1.1</version>
 		</dependency>
 	</dependencies>
-	<build>
-		
+	
+	
+	<build>		
 		<sourceDirectory>src</sourceDirectory>
-		<plugins>
-			
-			
+		
+		<resources>
+          <resource>
+            <directory>resources/properties</directory>
+            <targetPath>resources/properties</targetPath>
+          </resource>
+        </resources>
+		
+		<plugins>			
 			<plugin>
 		        <groupId>org.springframework.boot</groupId>
 		        <artifactId>spring-boot-maven-plugin</artifactId>
