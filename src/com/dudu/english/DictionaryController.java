@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dudu.english.utils.DateUtils;
 import com.dudu.english.utils.PropertiesUtils;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = {"http://localhost:4200", "http://141.136.36.155:4200/"}, maxAge = 3600)
 @RestController
 public class DictionaryController {
 	private final static String DICTIONARY_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + "dictionary\\"; 
