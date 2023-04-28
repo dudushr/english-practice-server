@@ -23,14 +23,14 @@ public class PropertiesUtils {
 			
 			String resourceName = "resources/properties/english.properties"; // could also be a constant
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			System.out.println("-----> loader = " + loader);
+			
 			props = new Properties();
 			try(InputStream resourceStream = loader.getResourceAsStream(resourceName)) {
 			    props.load(resourceStream);
 			}catch(Exception ex2) {
 				ex2.printStackTrace();
 			}
-			System.out.println("----> props was loaded " + props);
+			
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -43,9 +43,19 @@ public class PropertiesUtils {
 		}else {
 			prefix = "dev.";
 		}
-		System.out.println("-----> prefix = " + prefix);
 		
 		return props.getProperty(prefix + key);
+	}
+	
+	public String getPathDelim() {
+		String delim = "";
+		if("141.136.36.155".equals(hostAddress)) {
+			delim = "/";
+		}else {
+			delim = "\\";
+		}
+		
+		return delim;
 	}
 	
 	
@@ -53,7 +63,6 @@ public class PropertiesUtils {
         try {
             InetAddress localMachine = InetAddress.getLocalHost();
             String hostname = localMachine.getHostName();
-            System.out.println("Machine hostname: " + hostname);
             
             return hostname;
         } catch (Exception e) {
@@ -66,8 +75,7 @@ public class PropertiesUtils {
         try {
             InetAddress localMachine = InetAddress.getLocalHost();
             String hostAddress = localMachine.getHostAddress();
-            System.out.println("Machine address: " + hostAddress);
-            
+                        
             return hostAddress;
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

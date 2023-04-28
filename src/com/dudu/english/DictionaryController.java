@@ -3,6 +3,8 @@ package com.dudu.english;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -33,6 +35,11 @@ public class DictionaryController {
 	
 	private final static String CONFIG_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("configFolder");
 	private final static String CONFIG_FILE_NAME = "_config.json";
+	
+	private final static String HISTORY_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("historyFolder");
+	
+	private final static String PATH_DELIM = PropertiesUtils.getInstance().getPathDelim();
+	
 
 	@GetMapping("/dictionary/get/{uid}")	
 	public String getDictionary(@PathVariable String uid) {
@@ -165,6 +172,7 @@ public class DictionaryController {
 		try {			
 			dictionary =  java.net.URLDecoder.decode(dictionary, StandardCharsets.UTF_8.name());						
 			saveDictionary(dictionary, uid);
+			saveDictionaryBackup(dictionary, uid);
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}
@@ -287,6 +295,23 @@ public class DictionaryController {
 			e.printStackTrace();
 		}
 	}
+	
+	private void saveDictionaryBackup(String dictionary, String uid) { 
+		try {
+			String backupFileName = new StringBuffer("back_").append(getCurrentDateTime()).append(".json") .toString();
+			String absolutFileName = new StringBuffer(HISTORY_FIOLDER_NAME).append(uid.toLowerCase()).append(PATH_DELIM).append(backupFileName).toString();
+			IOUtils.writeToFile(IOUtils.formatJson(dictionary), absolutFileName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private String getCurrentDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss");
+        return now.format(formatter);
+    }
 	
 	private String sortDictionary(String dictionary) {
 		JSONParser jsonParser = new JSONParser();

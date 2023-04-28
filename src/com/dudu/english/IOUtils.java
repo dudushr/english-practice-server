@@ -4,14 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Scanner;
-import java.util.stream.Stream;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class IOUtils {
 
@@ -62,12 +64,25 @@ public class IOUtils {
 		Path filePath = Path.of(fileName);
 
 		try {
-			Files.delete(filePath);
+			Files.delete(filePath);			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+		
+		try {			
 			Files.writeString(filePath, text, StandardOpenOption.CREATE_NEW);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
 		
 	}
+	
+	public static String formatJson(String jsonString) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        Object jsonObject = mapper.readValue(jsonString, Object.class);
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        return writer.writeValueAsString(jsonObject);
+    }
 
 }
