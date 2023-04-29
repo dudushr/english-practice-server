@@ -1,0 +1,58 @@
+{
+  "dictionary" : [ {
+    "englishWord" : "diligent",
+    "hebrewWord" : [ "חרוץ" ],
+    "level" : "01",
+    "lastDictationDate" : "2023-04-29T15:26:09.958Z"
+  }, {
+    "englishWord" : "continent",
+    "hebrewWord" : [ "יבשת" ],
+    "level" : 48,
+    "lastDictationDate" : "2023-04-29T15:26:12.498Z"
+  }, {
+    "englishWord" : "hair",
+    "hebrewWord" : [ "שיער" ],
+    "level" : 48,
+    "lastDictationDate" : "2023-04-29T15:26:17.259Z"
+  }, {
+    "englishWord" : "answer",
+    "hebrewWord" : [ "תשובה" ],
+    "level" : 50,
+    "lastDictationDate" : "2023-04-29T15:26:20.104Z"
+  }, {
+    "englishWord" : "cat",
+    "hebrewWord" : [ "חתול" ],
+    "level" : 50,
+    "lastDictationDate" : "2023-04-29T15:26:22.492Z"
+  }, {
+    "englishWord" : "young",
+    "hebrewWord" : [ "צעיר" ],
+    "level" : 46,
+    "lastDictationDate" : "2023-04-29T15:25:54.279Z"
+  }, {
+    "englishWord" : "shoes",
+    "hebrewWord" : [ "נעליים" ],
+    "level" : 46,
+    "lastDictationDate" : "2023-04-29T15:25:57.030Z"
+  }, {
+    "englishWord" : "convince",
+    "hebrewWord" : [ "לשכנע" ],
+    "level" : 46,
+    "lastDictationDate" : "2023-04-29T15:25:59.494Z"
+  }, {
+    "englishWord" : "mistaken",
+    "hebrewWord" : [ "מוטעה", "שגוי" ],
+    "level" : 48,
+    "lastDictationDate" : "2023-04-28T16:47:25.606Z"
+  }, {
+    "englishWord" : "dog",
+    "hebrewWord" : [ "כלב" ],
+    "level" : 48,
+    "lastDictationDate" : "2023-04-29T15:26:01.846Z"
+  }, {
+    "englishWord" : "voyage",
+    "hebrewWord" : [ "מסע" ],
+    "level" : "64",
+    "lastDictationDate" : "2023-04-14T19:04:22.187Z"
+  } ]
+}

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dudu.english.utils.DataValidationUtils;
 import com.dudu.english.utils.DateUtils;
 import com.dudu.english.utils.PropertiesUtils;
 
@@ -75,7 +77,7 @@ public class DictionaryController {
 	}
 	
 	@PostMapping("/dictionary/update")
-	public String updateWord(@RequestBody String params) {
+	public String updateWord(@RequestBody String params) {		
 		JSONParser jsonParser = new JSONParser();
 			
 		try {
@@ -83,6 +85,7 @@ public class DictionaryController {
 			String wordToSave = getBodyParam(params, "wordToSave");
 			wordToSave = java.net.URLDecoder.decode(wordToSave, StandardCharsets.UTF_8.name());
 			wordToSave = wordToSave.substring(wordToSave.indexOf("{"));
+			
 			JSONObject newWord = (JSONObject) jsonParser.parse(wordToSave);
 	
 			String newEnglishWord = newWord.get("englishWord").toString();
@@ -118,7 +121,18 @@ public class DictionaryController {
 		String dictionary = loadDictionary(uid);
 		JSONParser jsonParser = new JSONParser();
 		try {			
-			JSONObject wordToadd = toEnglishWord(params);
+			JSONObject wordToAdd = toEnglishWord(params);
+			if(wordToAdd.get("level") == null) {
+				wordToAdd.put("level", 0);
+			}
+			
+			if(wordToAdd.get("lastDictationDate") == null) {
+				wordToAdd.put("lastDictationDate", DateUtils.convertToAngularDate(new Date()));
+			}
+			
+			if(!DataValidationUtils.validateWord(wordToAdd)) {
+				return "Invalid data";
+			}
 			
 			JSONObject dict = new JSONObject(); 
 			if(dictionary != null && !"".equals(dictionary)) {
@@ -127,7 +141,7 @@ public class DictionaryController {
 				dict.put("dictionary", new JSONArray());
 			}
 			JSONArray wordsList = (JSONArray) dict.get("dictionary");
-			wordsList.add(wordToadd);
+			wordsList.add(wordToAdd);
 			
 			saveDictionary(dict.toJSONString(), uid);
 		} catch (ParseException e) {
@@ -336,6 +350,12 @@ public class DictionaryController {
 		            try {
 		                String valA = (String) a.get("lastDictationDate");
 		                String valB = (String) b.get("lastDictationDate");
+		                if(a.get("level") == null) {
+		                	a.put("level", "0");
+		                }		                
+		                if(b.get("level") == null) {
+		                	b.put("level", "0");
+		                }
 		                int levelA = Integer.parseInt(a.get("level").toString());
 		                int levelB = Integer.parseInt(b.get("level").toString());
 		                
