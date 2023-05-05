@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 public class DataValidationUtils {
 	
 	public static boolean isAlphaNumeric(String str) {
-	    return str.matches("^[א-תa-zA-Z0-9]*$");
+	    return str.matches("^[ א-תa-zA-Z0-9]*$");
 	}
 	
 	public static boolean validateWord(JSONObject word) {
