@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class IOUtils {
+public class EnIOUtils {
 
 	public static String readFileOld(String fileName) {
 		StringBuffer fileContent = new StringBuffer();

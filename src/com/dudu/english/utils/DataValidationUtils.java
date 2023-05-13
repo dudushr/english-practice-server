@@ -11,6 +11,15 @@ public class DataValidationUtils {
 	    return str.matches("^[ א-תa-zA-Z0-9]*$");
 	}
 	
+	public static boolean isInteger(String str) {
+		try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+	}
+	
 	public static boolean validateWord(JSONObject word) {
 	   String englishWord = word.get("englishWord").toString();
 	   if(!isAlphaNumeric(englishWord)) {
@@ -23,6 +32,11 @@ public class DataValidationUtils {
 		   if(!isAlphaNumeric(hebrewWord)) {
 			   return false;
 		   }
+	   }
+	   
+	   String level = word.get("level").toString();
+	   if(level != null && !isInteger(level)) {
+		   return false;
 	   }
 	   
 	   return true;

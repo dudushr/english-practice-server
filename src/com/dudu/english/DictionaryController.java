@@ -1,5 +1,7 @@
 package com.dudu.english;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -14,16 +16,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dudu.english.utils.DataValidationUtils;
 import com.dudu.english.utils.DateUtils;
@@ -39,6 +48,8 @@ public class DictionaryController {
 	private final static String CONFIG_FILE_NAME = "_config.json";
 	
 	private final static String HISTORY_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("historyFolder");
+	
+	private final static String CLUE_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("clueFolder");
 	
 	private final static String PATH_DELIM = PropertiesUtils.getInstance().getPathDelim();
 	
@@ -199,7 +210,7 @@ public class DictionaryController {
 	private String loadConfig(@PathVariable String uid) { 
 		String config = "";
 		try {
-			config = IOUtils.readFile(getConfigFileName(uid));
+			config = EnIOUtils.readFile(getConfigFileName(uid));
 		}catch(Exception ex) {
 			System.out.println("Config no exist for user uid");
 		}
@@ -222,7 +233,7 @@ public class DictionaryController {
 			json.put("highLevelWords", highLevelWords);
 			json.put("mediumLevelWords", mediumLevelWords);
 			json.put("lowLevelWords", lowLevelWords);
-			IOUtils.writeToFile(json.toJSONString(), getConfigFileName(uid));
+			EnIOUtils.writeToFile(json.toJSONString(), getConfigFileName(uid));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -230,6 +241,99 @@ public class DictionaryController {
 		
 		return "";
 	}
+	
+	
+	@PostMapping("/remove/clue/{uid}/{englishWord}")
+	public String removeClue(@PathVariable String uid, @PathVariable String englishWord) {
+		try {				
+	        String clueFileName = getClueFileName(uid, englishWord);
+	        File file = new File(clueFileName);
+	        if (file.delete()) {	            
+	            updateWordParam(uid, englishWord, "clueFileName", "");
+	        } else {
+	            if(!file.exists()) {
+	            	updateWordParam(uid, englishWord, "clueFileName", "");
+	            }
+	        }
+			
+			
+			
+			return getJsonStatus("OK");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getJsonStatus("FAILED");
+		}
+	}
+	
+	@PostMapping("/upload/{uid}/{englishWord}")
+	public String handleFileUpload(@PathVariable String uid, @PathVariable String englishWord, @RequestParam("file") MultipartFile file) {
+		try {	
+			String directory = getClueFilePath(uid);
+	        File dir = new File(directory);
+	        if (!dir.exists()) {
+	            dir.mkdirs();
+	        }
+			
+	        String clueFileName = getClueFileName(uid, englishWord);
+			File convertedFile = new File(clueFileName);
+			file.transferTo(convertedFile);
+			
+			updateWordParam(uid, englishWord, "clueFileName", clueFileName);
+			
+			return "File uploaded successfully!";
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "Error uploading file!";
+		}
+	}
+	
+	@GetMapping("/clue/{uid}/{englishWord}")
+	public ResponseEntity<byte[]> getImage(@PathVariable String uid, @PathVariable("englishWord") String englishWord) {
+		try {
+			String clueFileName = getClueFileName(uid, englishWord);		
+			FileInputStream imageStream = new FileInputStream(clueFileName);
+			byte[] imageBytes = IOUtils.toByteArray(imageStream);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_JPEG);
+
+			ResponseEntity<byte[]> responseEntity = new ResponseEntity<byte[]>(imageBytes, headers, HttpStatus.OK);
+			return responseEntity;
+
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	
+	
+	public String updateWordParam(String uid, String englishWord, String key, String value) {		
+		JSONParser jsonParser = new JSONParser();
+			
+		try {
+			String dictionary = loadDictionary(uid);	
+			
+			JSONObject dict = (JSONObject) jsonParser.parse(dictionary);
+			JSONArray wordsList = (JSONArray) dict.get("dictionary");
+			for(int i=0; i<wordsList.size(); i++) {
+				JSONObject word= (JSONObject) wordsList.get(i);
+				String currentWord = ((JSONObject)word).get("englishWord").toString();
+				if(englishWord.equals(currentWord)) {
+					word.put(key, value);										
+				}
+			}
+			
+			saveDictionary(dict.toJSONString(), uid);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
+		
+		
+	}
+	
 	
 	private JSONObject toEnglishWord(String params) throws ParseException {
 		HashMap<String, String> paramsMap = bodyParamsToMap(params);
@@ -292,7 +396,7 @@ public class DictionaryController {
 		String dictionary = "";
 		try {
 			System.out.println("---> Dictionary filename = " + getDictionaryFileName(uid));
-			dictionary = IOUtils.readFile(getDictionaryFileName(uid));
+			dictionary = EnIOUtils.readFile(getDictionaryFileName(uid));
 			System.out.println("---> dictionary = " + dictionary);
 		}catch(Exception ex) {
 			System.out.println("Dictionary no exist for user uid");
@@ -303,7 +407,7 @@ public class DictionaryController {
 
 	private void saveDictionary(String dictionary, String uid) { 
 		try {
-			IOUtils.writeToFile(dictionary, getDictionaryFileName(uid));
+			EnIOUtils.writeToFile(dictionary, getDictionaryFileName(uid));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -314,7 +418,7 @@ public class DictionaryController {
 		try {
 			String backupFileName = new StringBuffer("back_").append(getCurrentDateTime()).append(".json") .toString();
 			String absolutFileName = new StringBuffer(HISTORY_FIOLDER_NAME).append(uid.toLowerCase()).append(PATH_DELIM).append(backupFileName).toString();
-			IOUtils.writeToFile(IOUtils.formatJson(dictionary), absolutFileName);
+			EnIOUtils.writeToFile(EnIOUtils.formatJson(dictionary), absolutFileName);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -413,4 +517,19 @@ public class DictionaryController {
 		return new StringBuffer(CONFIG_FIOLDER_NAME).append(uid.toLowerCase()).append(CONFIG_FILE_NAME).toString();
 	}
 	
+	private String getClueFilePath(String uid) {
+		return new StringBuffer(CLUE_FIOLDER_NAME).append(uid.toLowerCase()).toString();
+	}
+	
+	private String getClueFileName(String uid, String englishWord) {
+		return new StringBuffer(getClueFilePath(uid)).append(PATH_DELIM).append(englishWord.toLowerCase()).append(".jpg").toString();
+	}
+	
+	private String getJsonStatus(String status) {
+		StringBuffer statusAsJson = new StringBuffer("{");
+		statusAsJson.append("\"status\": \"").append(status).append("\"");
+		statusAsJson.append("}");
+		
+		return statusAsJson.toString();
+	}
 }
