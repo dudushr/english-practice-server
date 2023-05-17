@@ -226,6 +226,7 @@ public class DictionaryController {
 		String highLevelWords = getBodyParam(params, "highLevelWords").replaceAll("\"", "");
 		String mediumLevelWords = getBodyParam(params, "mediumLevelWords").replaceAll("\"", "");
 		String lowLevelWords = getBodyParam(params, "lowLevelWords").replaceAll("\"", "");
+		String showClueUntilLevel = getBodyParam(params, "showClueUntilLevel").replaceAll("\"", "");
 		
 		try {
 			JSONObject json = new JSONObject();
@@ -233,6 +234,7 @@ public class DictionaryController {
 			json.put("highLevelWords", highLevelWords);
 			json.put("mediumLevelWords", mediumLevelWords);
 			json.put("lowLevelWords", lowLevelWords);
+			json.put("showClueUntilLevel", showClueUntilLevel);
 			EnIOUtils.writeToFile(json.toJSONString(), getConfigFileName(uid));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -277,6 +279,7 @@ public class DictionaryController {
 	        String clueFileName = getClueFileName(uid, englishWord);
 			File convertedFile = new File(clueFileName);
 			file.transferTo(convertedFile);
+			System.out.println("-----> File was uploaded: " + file.toString());
 			
 			updateWordParam(uid, englishWord, "clueFileName", clueFileName);
 			
@@ -320,7 +323,8 @@ public class DictionaryController {
 				JSONObject word= (JSONObject) wordsList.get(i);
 				String currentWord = ((JSONObject)word).get("englishWord").toString();
 				if(englishWord.equals(currentWord)) {
-					word.put(key, value);										
+					word.put(key, value);	
+					System.out.println("----> Update " + key + " = " + value);
 				}
 			}
 			
