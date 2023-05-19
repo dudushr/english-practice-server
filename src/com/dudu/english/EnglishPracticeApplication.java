@@ -34,6 +34,7 @@ public class EnglishPracticeApplication implements WebMvcConfigurer{
 		map.put("server.port", port);
 		map.put("spring.servlet.multipart.max-file-size", "2MB");
 		map.put("spring.servlet.multipart.max-request-size", "2MB");
+		map.put("spring.resources.static-locations", "/resources/");
 		
 		app.setDefaultProperties(map);
 		app.run(args);
@@ -45,7 +46,7 @@ public class EnglishPracticeApplication implements WebMvcConfigurer{
 	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:4200")
+            .allowedOrigins("http://localhost:4200", "http://141.136.36.155:4200", "http://141.136.36.155:4210/")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
