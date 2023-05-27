@@ -2,6 +2,7 @@ package com.dudu.english;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -21,6 +22,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,6 +53,7 @@ public class DictionaryController {
 	private final static String HISTORY_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("historyFolder");
 	
 	private final static String CLUE_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("clueFolder");
+	private final static String AUDIO_FIOLDER_NAME = PropertiesUtils.getInstance().get("filesResourceLocation") + PropertiesUtils.getInstance().get("audioFolder");
 	
 	private final static String PATH_DELIM = PropertiesUtils.getInstance().getPathDelim();
 	
@@ -308,6 +312,18 @@ public class DictionaryController {
 			return null;
 		}
 	}
+	
+	@GetMapping("/audio/{englishWord}")
+    public ResponseEntity<Resource> getAudio(@PathVariable String englishWord) throws FileNotFoundException {
+        String filePath = getAudioFile(englishWord);
+        File audioFile = new File(filePath);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(audioFile));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(audioFile.length())
+                .body(resource);
+    }
 
 	
 	
@@ -535,5 +551,9 @@ public class DictionaryController {
 		statusAsJson.append("}");
 		
 		return statusAsJson.toString();
+	}
+	
+	private String getAudioFile(String englishWord) {
+		return new StringBuffer(AUDIO_FIOLDER_NAME).append(englishWord).append(".mp3").toString();
 	}
 }
